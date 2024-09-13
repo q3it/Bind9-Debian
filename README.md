@@ -8,8 +8,6 @@
 
 El objetivo de esta guia es mostrar cómo configurar un servidor `DNS Bind9` que resuelva direcciones IP en nombres de dominio dentro de una red privada. En este proceso de configuración se requieren conocimientos mínimos de `REDES` y `DNS`. En las [referencias](#referencias), encontrará enlaces a sitios de `Internet` que le pueden ayudar.
 
-> **NOTA**: La implementación de esta configuración ayuda a los administradores de red cubanos a mitigar la vulnerabilidad `DDoS por Amplificación de DNS`, notificada por la OSRI, como consecuencia de la recursividad en servidores DNS.
-
 ## Escenario
 
 Es común encontrarnos entornos de red, donde se necesite que un mismo servidor de nombres `DNS` devuelva registros tanto de tipo canónico como direcciones `IP`, dependiendo de la red desde donde se originen las consultas. Por ejemplo:
