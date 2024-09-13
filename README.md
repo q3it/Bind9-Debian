@@ -1,12 +1,12 @@
-# Configuración de un servidor DNS Bind9 con vistas en Debian 12
+# Instalación de un servidor DNS Bind9 en Debian 12
 
 ## Autor
 
-- [Ixen Rodríguez Pérez - kurosaki1976](ixenrp1976@gmail.com)
+- [Diego Bedoya Castro - q3it](diegofb.castro@gmail.com)
 
 ## Resumen
 
-El objetivo de esta guía es mostrar cómo configurar un servidor `DNS Bind9` que brinde información distinta tanto a redes privadas como públicas, mediante el uso de la funcionalidad de vistas (`views`). Como tutorial en sí, se le guiará a través de todo el proceso de configuración, pero se requieren conocimientos iniciales de `DNS` y `Bind9`. En las [referencias](#referencias), encontrará enlaces a sitios de `Internet` que le pueden ayudar.
+El objetivo de esta guia es mostrar cómo configurar un servidor `DNS Bind9` que resuelva direcciones IP en nombres de dominio dentro de una red privada. En este proceso de configuración se requieren conocimientos mínimos de `REDES` y `DNS`. En las [referencias](#referencias), encontrará enlaces a sitios de `Internet` que le pueden ayudar.
 
 > **NOTA**: La implementación de esta configuración ayuda a los administradores de red cubanos a mitigar la vulnerabilidad `DDoS por Amplificación de DNS`, notificada por la OSRI, como consecuencia de la recursividad en servidores DNS.
 
