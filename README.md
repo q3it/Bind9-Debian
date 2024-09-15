@@ -165,329 +165,99 @@ zone "1.168.192.in-addr.arpa" {
 
 El sistema `DNS` está compuesto por varios registros, conocidos como Registros de Recursos (`Resource Records` o `RR`, en Inglés), que definen la información en el sistema de nombres de dominio, tanto para resolución de nombre -conocida también como directa o canónica (conversión de nombre a dirección `IP`)-, como para resolución de nombre inversa (conversión de dirección `IP` a nombre).
 
-- Creamos el directorio de zonas
+- Creamos el directorio de zonas.
 
 ```bash
-nano /etc/bind/db.example.tld_public
+mkdir /etc/bind/zonas
+```
+
+- Copiamos el directorio de Zona Directa.
+   
+```bash
+cp /etc/bind/db.local /etc/bind/zonas/db.clockwork.local
+```
+- Configuramos.
+
+```bash
+nano /etc/bind/db.clockwork.local
 ```
 ```bash
 ;
-; example.tld Public Forward Zone
+; BIND data file for local loopback interface
 ;
-$ORIGIN .
-$TTL 1W
-example.tld  IN  SOA ns.example.tld.  postmaster.example.tld. (
-                2019103101 ; serial
-                1H         ; refresh
-                10M        ; retry
-                2W         ; expire
-                1H         ; negative cache ttl
-                )
+$TTL    604800
+@       IN      SOA     servidor.clockwork.local. root.clockwork.local. (
+                              2         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
 ;
-        NS  ns.example.tld.
-        A   172.16.0.2
-        MX  10  mail.example.tld.
-        TXT "v=spf1 ip4:172.16.0.3 a:mail.example.tld ~all"
-;
-$ORIGIN example.tld.
-$TTL 5M
-ns    IN  A   172.16.0.2
-mail  IN  A   172.16.0.3
-www   IN  A   172.16.0.4
-jb    IN  A   172.16.0.5
-;
-smtp        IN  CNAME   mail
-imap        IN  CNAME   mail
-pop3        IN  CNAME   mail
-webmail     IN  CNAME   mail
-conference  IN  CNAME   jb
-;
-$ORIGIN _udp.example.tld.
-$TTL 5M
-_domain   IN  SRV    5 0 53 ns.example.tld.
-;
-$ORIGIN _tcp.example.tld.
-$TTL 5M
-_domain IN    SRV    5 0 53 ns.example.tld.
-_http   IN    SRV    5 0 80 www.example.tld.
-_https  IN    SRV    5 0 443 www.example.tld.
-_smtp   IN    SRV   10 0 25 smtp.example.tld.
-_smtps  IN    SRV   10 0 465 smtp.example.tld.
-_imap   IN    SRV   10 0 143 imap.example.tld.
-_imaps  IN    SRV   10 0 993 imap.example.tld.
-_pop3   IN    SRV   10 0 110 pop3.example.tld.
-_pop3s  IN    SRV   10 0 995 pop3.example.tld.
-_submission  IN	SRV    10 0 587 pop3.example.tld.
-_xmpp-client IN	SRV	5 0 5222 jb.example.tld.
-_xmpps-client IN SRV	5 0 5223 jb.example.tld.
-_xmpp-server IN	SRV     5 0 5269 jb.example.tld.
-;
-$ORIGIN _tcp.conference.example.tld.
-$TTL 5M
-_xmpp-server IN	SRV     5 0 5269 jb.example.tld.
+                IN      NS      servidor.clockwork.local.
+servidor        IN      A       192.168.1.76
+equipo01        IN      A       192.168.1.54
+server          IN      CNAME   servidor
 ```
 
-- Zona inversa para consultas públicas
+- Copiamos el directorio de Zona Inversa.
+   
+```bash
+cp /etc/bind/zonas/db.clockwork.local /etc/bind/zonas/db.1.168.192
+```
+
+- Configuramos.
 
 ```bash
-nano /etc/bind/db.0.16.172.in-addr.arpa
+nano /etc/bind/db.1.168.192
 ```
 ```bash
 ;
-; 0.16.172.in-addr.arpa Public Reverse Zone
+; BIND data file for local loopback interface
 ;
-$ORIGIN .
-$TTL 1W
-0.16.172.IN-ADDR.ARPA   IN  SOA ns.example.tld.  postmaster.example.tld. (
-                2019103101 ; serial
-                1H         ; refresh
-                10M        ; retry
-                2W         ; expire
-                1H         ; negative cache ttl
-                )
+$TTL    604800
+@       IN      SOA     servidor.clockwork.local. root.clockwork.local. (
+                              2         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
 ;
-        IN  NS  ns.example.tld.
-;
-$ORIGIN 0.16.172.IN-ADDR.ARPA.
-$TTL 5M
-2   IN  PTR ns.example.tld.
-3   IN  PTR mail.example.tld.
-        PTR smtp.example.tld.
-        PTR imap.example.tld.
-        PTR pop3.example.tld.
-        PTR webmail.example.tld.
-4   IN  PTR www.example.tld.
-5   IN  PTR jb.example.tld.
-```
-
-- Zona directa para consultas privadas
-
-```bash
-nano /etc/bind/db.example.tld_private
-```
-```bash
-;
-; example.tld Public Forward Zone
-;
-$ORIGIN .
-$TTL 1W
-example.tld  IN  SOA ns.example.tld.  postmaster.example.tld. (
-                2019103101 ; serial
-                1H         ; refresh
-                10M        ; retry
-                2W         ; expire
-                1H         ; negative cache ttl
-                )
-;
-        NS  ns.example.tld.
-        A   192.168.0.1
-        MX  10  mail.example.tld.
-        TXT "v=spf1 ip4:192.168.0.2 a:mail.example.tld ~all"
-;
-$ORIGIN example.tld.
-$TTL 5M
-ns    IN  A   192.168.0.1
-mail  IN  A   192.168.0.2
-www   IN  A   192.168.0.3
-jb    IN  A   192.168.0.4
-;
-smtp        IN  CNAME   mail
-imap        IN  CNAME   mail
-pop3        IN  CNAME   mail
-webmail     IN  CNAME   mail
-conference  IN  CNAME   jb
-;
-$ORIGIN _udp.example.tld.
-$TTL 5M
-_domain   IN  SRV    5 0 53 ns.example.tld.
-;
-$ORIGIN _tcp.example.tld.
-$TTL 5M
-_domain IN    SRV    5 0 53 ns.example.tld.
-_http   IN    SRV    5 0 80 www.example.tld.
-_https  IN    SRV    5 0 443 www.example.tld.
-_smtp   IN    SRV   10 0 25 smtp.example.tld.
-_smtps  IN    SRV   10 0 465 smtp.example.tld.
-_imap   IN    SRV   10 0 143 imap.example.tld.
-_imaps  IN    SRV   10 0 993 imap.example.tld.
-_pop3   IN    SRV   10 0 110 pop3.example.tld.
-_pop3s  IN    SRV   10 0 995 pop3.example.tld.
-_submission  IN    SRV   10 0 587 pop3.example.tld.
-_xmpp-client IN     SRV     5 0 5222 jb.example.tld.
-_xmpps-client IN     SRV     5 0 5223 jb.example.tld.
-_xmpp-server IN     SRV     5 0 5269 jb.example.tld.
-;
-$ORIGIN _tcp.conference.example.tld.
-$TTL 5M
-_xmpp-server IN  SRV     5 0 5269 jb.example.tld.
-```
-
-- Zona inversa para consultas privadas
-
-```bash
-nano /etc/bind/db.0.168.192.in-addr.arpa
-```
-```bash
-;
-; 0.168.192.in-addr.arpa Public Reverse Zone
-;
-$ORIGIN .
-$TTL 1W
-0.168.192.IN-ADDR.ARPA   IN  SOA ns.example.tld.  postmaster.example.tld. (
-                2019103101 ; serial
-                1H         ; refresh
-                10M        ; retry
-                2W         ; expire
-                1H         ; negative cache ttl
-                )
-;
-        IN  NS  ns.example.tld.
-;
-$ORIGIN 0.168.192.IN-ADDR.ARPA.
-$TTL 5M
-1   IN  PTR ns.example.tld.
-2   IN  PTR mail.example.tld.
-        PTR smtp.example.tld.
-        PTR imap.example.tld.
-        PTR pop3.example.tld.
-        PTR webmail.example.tld.
-3   IN  PTR www.example.tld.
-4   IN  PTR jb.example.tld.
-```
-
-5. Crear estructura para almacenamiento de trazas, bitácora de eventos.
-
-```bash
-mkdir -p /var/log/named/
-chown -R bind /var/log/named/
-chmod u+rw /var/log/named/
-nano /etc/bind/named.conf.log
-```
-```bash
-logging {
-     channel default_syslog {
-             syslog local2;
-     };
-     channel audit_log {
-             file "/var/log/named/audit.log" size 10m;
-             severity debug;
-             print-category yes;
-             print-severity yes;
-             print-time yes;
-     };
-     channel requests_log {
-             // DNS requests logging
-             file "/var/log/named/requests.log" size 10m;
-             severity debug;
-             print-time yes;
-             print-category yes;
-             print-severity yes;
-     };
-     channel null {
-             null;
-     };
-     category default { default_syslog; };
-     category general { audit_log; };
-     category security { audit_log; };
-     category config { audit_log; };
-     category resolver { audit_log; };
-     category xfer-in { audit_log; };
-     category xfer-out { audit_log; };
-     category notify { audit_log; };
-     category client { audit_log; };
-     category network { audit_log; };
-     category update { audit_log; };
-     category queries { requests_log; audit_log; };
-     category lame-servers { null; };
-};
-```
-
-- Definir rotación de los archivos de bitácora.
-
-```bash
-nano /etc/logrotate.d/named
-```
-```bash
-/var/log/named/audit.log {
-    daily
-    missingok
-    rotate 7
-    compress
-    delaycompress
-    notifempty
-    create 644 bind bind
-    postrotate
-        systemctl reload named > /dev/null
-    endscript
-}
-
-/var/log/named/requests.log {
-    daily
-    missingok
-    rotate 7
-    compress
-    delaycompress
-    notifempty
-    create 644 bind bind
-    postrotate
-        systemctl reload named > /dev/null
-    endscript
-}
+                IN      NS      servidor.clockwork.local.
+76              IN      PTR     servidor.clockwork.local.
 ```
 
 6. Comprobar la existencia de errores tanto en la configuración como en los ficheros de zonas.
 
 ```bash
-named-checkconf -z
-named-checkzone example.tld /etc/bind/db.example.tld_public
-named-checkzone 0.16.172.in-addr.arpa /etc/bind/db.0.16.172.in-addr.arpa
-named-checkzone example.tld /etc/bind/db.example.tld_private
-named-checkzone 0.168.192.in-addr.arpa /etc/bind/db.0.168.192.in-addr.arpa
+named-checkconf /etc/bind/named.conf.local
+named-checkzone clockwork.local /etc/bind/zonas/db.clockwork.local
+named-checkzone 1.168.192.in-addr.arpa /etc/bind/zonas/db.1.168.192
 ```
 
 7. Reiniciar servicios y realizar comprobaciones.
 
 ```bash
-systemctl restart logrotate named
-tail -fn100 /var/log/syslog
+systemctl restart bind9
 ```
 
-- Comprobar correcta ejecución del servidor
+- Comprobar estado del servidor
 
 ```bash
-netstat -tapn | grep 53
-netstat -lptun
+systemctl status bind9
 ```
 
-- Desde una red pública
+- Conexión desde máquina cliente 
 
 ```bash
-dig example.tld
-nslookup -q=any example.tld
-host 172.16.0.2
-dig -t SRV @example.tld _xmpp-server._tcp.example.tld
-host -t SRV _imaps._tcp.example.tld
-host -t MX example.tld
-tail -fn100 /var/log/named_query.log
-tail -fn100 /var/log/named.log
-```
-
-- Desde una red privada
-
-```bash
-nslookup example.tld
-host ns.example.tld
-dig @127.0.0.1 -x 192.168.0.1
-dig -t SRV @example.tld _xmpp-client._tcp.example.tld
-host -t SRV _domain._udp.example.tld
-host -t NS example.tld
-tail -fn100 /var/log/named_query.log
-tail -fn100 /var/log/named.log
+ping servidor.clockwork.local
+ping equipo01
+nslookup clockwork.local
+host servidor
 ```
 
 ## Conclusiones
 
-Con la introducción en `Bind9` de la funcionalidad de vistas, otro mecanismo muy útil en entornos de red que brindan servicios detrás de cortafuegos, es posible presentar una configuración del servidor `DNS` distinta a varios dispositivos. Algo particularmente provechoso si se ejecuta un servidor que recibe consultas desde redes privadas y públicas como es el caso de `Internet`.
+`Bind9` es un mecanismo muy útil en entornos de red que brindan servicios detrás de cortafuegos, es posible presentar una configuración del servidor `DNS` distinta a varios dispositivos. Algo particularmente provechoso si se ejecuta un servidor que recibe consultas desde redes privadas y públicas como es el caso de `Internet`.
 
 ## Referencias
 
