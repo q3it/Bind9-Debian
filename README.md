@@ -142,56 +142,30 @@ cp /etc/bind/named.conf.local{,.bak}
 nano /etc/bind/named.conf.local
 ```
 ```bash
-acl "INTRANET"  { 192.168.0.0/24; };
-view "private" {
-	match-clients { localhost; INTRANET; };
-	recursion yes;
-	allow-recursion { localhost; INTRANET; };
-	allow-recursion-on { localhost; 192.168.0.1; };
-	include "/etc/bind/named.conf.default-zones";
-	zone "example.tld" {
-		type master;
-		file "/etc/bind/db.example.tld_private";
-		allow-query { localhost; INTRANET; };
-		allow-update { none; };
-		notify no;
-	};
-	zone "0.168.192.IN-ADDR.ARPA" {
-		type master;
-		file "/etc/bind/db.0.168.192.in-addr.arpa";
-		allow-query { localhost; INTRANET; };
-		allow-update { none; };
-		notify no;
-	};
+//
+// Do any local configuration here
+//
+
+// Consider adding the 1918 zones here, if they are not used in your
+// organization
+//include "/etc/bind/zones.rfc1918";
+
+zone "clockwork.local" IN {
+        type master;
+        file "etc/bind/zones/db.clockwork.local";
 };
-view "public" {
-	match-clients { !INTRANET; any; };
-	recursion no;
-	include "/etc/bind/named.conf.default-zones";
-	zone "example.tld" {
-		type master;
-		file "/etc/bind/db.example.tld_public";
-		allow-query { any; };
-		allow-update { none; };
-		notify no;
-	};
-	zone "0.16.172.IN-ADDR.ARPA" {
-		type master;
-		file "/etc/bind/db.0.16.172.in-addr.arpa";
-		allow-query { any; };
-		allow-update { none; };
-		notify no;
-	};
+
+zone "1.168.192.in-addr.arpa" {
+        type master;
+        file "/etc/bind/zones/db.1.168.192";
 };
 ```
 
-> **NOTA**: Cuando se utiliza las funcionalidad de vistas, todas las definiciones de zonas **TIENEN** que estar contenidas dentro de éstas, de lo contrario el servicio no iniciará y generará códigos de error. Es por ello que el fichero **`/etc/bind/named.conf.default-zones`** fue incluido en cada definición de vista y no en el fichero de configuración principal.
-
-4. Crear ficheros de zonas.
+5. Crear ficheros de zonas.
 
 El sistema `DNS` está compuesto por varios registros, conocidos como Registros de Recursos (`Resource Records` o `RR`, en Inglés), que definen la información en el sistema de nombres de dominio, tanto para resolución de nombre -conocida también como directa o canónica (conversión de nombre a dirección `IP`)-, como para resolución de nombre inversa (conversión de dirección `IP` a nombre).
 
-- Zona directa para consultas públicas
+- Creamos el directorio de zonas
 
 ```bash
 nano /etc/bind/db.example.tld_public
