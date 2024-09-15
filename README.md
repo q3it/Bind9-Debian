@@ -20,9 +20,9 @@ El servidor `DNS` de ejemplo utilizá los siguientes parámetros de configuraci�
 
 * Dirección `IP` del servidor: `192.168.1.76`
 * Dominio `DNS`: `clockwork.local`
-* `FQDN` del servidor: `ns.clockwork.local`
-* Subred interna de la zona de servicios: `192.168.1.0/24`
-* Subred externa para registros públicos: `192.168.210.142/24`
+* `FQDN` del servidor: `ns.servidor.clockwork.local`
+* Red interna de la zona de servicios: `192.168.1.0/24`
+* Red externa para registros públicos: `192.168.210.142/24`
 
 ### Ajustes de los parámetros de red
 
@@ -262,6 +262,6 @@ host servidor
 ## Referencias
 
 * [Bind9 - Debian Wiki](https://wiki.debian.org/Bind9)
-* [Internet Systems Consortium](https://www.youtube.com/user/ISCdotorg/videos)
+* [Internet Systems Consortium](https://www.isc.org/bind/)
 * [Cómo configurar BIND en Ubuntu](https://www.digitalocean.com/community/tutorials/how-to-configure-bind-as-a-private-network-dns-server-on-ubuntu-18-04-es))
 * [DNS con Bind9](https://www.redeszone.net/tutoriales/servidores/configurar-servidor-dns-bind-linux/))
