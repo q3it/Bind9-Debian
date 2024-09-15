@@ -2,7 +2,7 @@
 
 ## Autor
 
-- [q3it](diegofb.castro@gmail.com)
+- [q3it]
 
 ## Resumen
 
