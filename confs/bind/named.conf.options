@@ -1,32 +1,26 @@
 options {
-    version none;
-    directory "/var/cache/bind";
-    dnssec-enable yes;
-    dnssec-validation yes;
-    auth-nxdomain no;
-    interface-interval 0;
-    listen-on { 127.0.0.1; 192.168.0.1; };
-    listen-on-v6 { none; };
-    allow-query { any; };
-    empty-zones-enable no;
-    forwarders { 8.8.8.8; 8.8.4.4; };
-    forward first;
-    recursion no;
-    prefetch 0;
-    pid-file "/var/run/named/named.pid";
-    session-keyfile "/var/run/named/session.key";
-    minimal-responses yes;
-    max-cache-size 128m;
-    rate-limit {
-        responses-per-second 15;
-        log-only no;
-    };
-    cleaning-interval 15;
-    max-cache-ttl 60;
-    max-ncache-ttl 60;
-    flush-zones-on-shutdown yes;
-};
-controls {
-    inet 127.0.0.1 port 953
-        allow { localhost; 192.168.0.1; } keys { rndc-key; };
+        directory "/var/cache/bind";
+
+        // If there is a firewall between you and nameservers you want
+        // to talk to, you may need to fix the firewall to allow multiple
+        // ports to talk.  See http://www.kb.cert.org/vuls/id/800113
+
+        // If your ISP provided one or more IP addresses for stable
+        // nameservers, you probably want to use them as forwarders.
+        // Uncomment the following block, and insert the addresses replacing
+        // the all-0's placeholder.
+
+        listen-on { any; };
+        allow-query { localhost; 192.168.1.0/24; };
+        forwarders {
+                8.8.8.8;
+        };
+
+        //========================================================================
+        // If BIND logs error messages about the root key being expired,
+        // you will need to update your keys.  See https://www.isc.org/bind-keys
+        //========================================================================
+        dnssec-validation no;
+
+        #listen-on-v6 { any; };
 };
