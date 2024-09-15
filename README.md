@@ -2,7 +2,7 @@
 
 ## Autor
 
-#### <span style="color:#2CBE96">q3it</span>
+- [q3it](https://www.blogger.com/profile/16118326082555553765)
 
 ## Resumen
 
