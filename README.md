@@ -2,7 +2,7 @@
 
 ## Autor
 
-- [q3it]
+#### <span style="color:#2CBE96">q3it</span>
 
 ## Resumen
 
