@@ -261,6 +261,8 @@ host servidor
 
 ## Referencias
 
+https://github.com/user-attachments/assets/011b6fba-66c3-4acb-b50c-7896b2d37579
+
 * [Bind9 - Debian Wiki](https://wiki.debian.org/Bind9)
 * [Internet Systems Consortium](https://www.isc.org/bind/)
 * [Cómo configurar BIND en Ubuntu](https://www.digitalocean.com/community/tutorials/how-to-configure-bind-as-a-private-network-dns-server-on-ubuntu-18-04-es)
