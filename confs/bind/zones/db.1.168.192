@@ -1,0 +1,13 @@
+;
+; BIND data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     servidor.clockwork.local. root.clockwork.local. (
+                              2         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+                IN      NS      servidor.clockwork.local.
+76              IN      PTR     servidor.clockwork.local.
