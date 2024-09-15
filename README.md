@@ -262,10 +262,6 @@ host servidor
 ## Referencias
 
 * [Bind9 - Debian Wiki](https://wiki.debian.org/Bind9)
-* [Understanding views in BIND 9, by example](https://kb.isc.org/docs/aa-00851)
 * [Internet Systems Consortium](https://www.youtube.com/user/ISCdotorg/videos)
-* [Two-in-one DNS server with BIND9](https://www.howtoforge.com/two_in_one_dns_bind9_views)
-* [Vistas (views) en el servidor DNS Bind9 ](https://www.josedomingo.org/pledin/2017/12/vistas-views-en-el-servidor-dns-bind9/)
-* [Limiting the Memory a Name Server Uses](https://flylib.com/books/en/2.684.1/limiting_the_memory_a_name_server_uses.html)
-* [SRV record](https://en.wikipedia.org/wiki/SRV_record)
-* [Services Record (SRV)](http://www.zytrax.com/books/dns/ch8/srv.html)
+* [Cómo configurar BIND en Ubuntu](https://www.digitalocean.com/community/tutorials/how-to-configure-bind-as-a-private-network-dns-server-on-ubuntu-18-04-es))
+* [DNS con Bind9](https://www.redeszone.net/tutoriales/servidores/configurar-servidor-dns-bind-linux/))
