@@ -2,7 +2,7 @@
 
 ## Autor
 
-- [Diego Bedoya Castro - q3it](diegofb.castro@gmail.com)
+- [q3it](diegofb.castro@gmail.com)
 
 ## Resumen
 
@@ -263,5 +263,5 @@ host servidor
 
 * [Bind9 - Debian Wiki](https://wiki.debian.org/Bind9)
 * [Internet Systems Consortium](https://www.isc.org/bind/)
-* [Cómo configurar BIND en Ubuntu](https://www.digitalocean.com/community/tutorials/how-to-configure-bind-as-a-private-network-dns-server-on-ubuntu-18-04-es))
-* [DNS con Bind9](https://www.redeszone.net/tutoriales/servidores/configurar-servidor-dns-bind-linux/))
+* [Cómo configurar BIND en Ubuntu](https://www.digitalocean.com/community/tutorials/how-to-configure-bind-as-a-private-network-dns-server-on-ubuntu-18-04-es)
+* [DNS con Bind9](https://www.redeszone.net/tutoriales/servidores/configurar-servidor-dns-bind-linux/)
