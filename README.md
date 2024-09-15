@@ -259,9 +259,11 @@ host servidor
 
 `Bind9` es un mecanismo muy útil en entornos de red que brindan servicios detrás de cortafuegos, es posible presentar una configuración del servidor `DNS` distinta a varios dispositivos. Algo particularmente provechoso si se ejecuta un servidor que recibe consultas desde redes privadas y públicas como es el caso de `Internet`.
 
-## Referencias
+## Demo
 
 https://github.com/user-attachments/assets/011b6fba-66c3-4acb-b50c-7896b2d37579
+
+## Referencias
 
 * [Bind9 - Debian Wiki](https://wiki.debian.org/Bind9)
 * [Internet Systems Consortium](https://www.isc.org/bind/)
