@@ -6,57 +6,65 @@
 
 ## Resumen
 
-El objetivo de esta guia es mostrar cómo configurar un servidor `DNS Bind9` que resuelva direcciones IP en nombres de dominio dentro de una red privada. En este proceso de configuración se requieren conocimientos mínimos de `REDES` y `DNS`. En las [referencias](#referencias), encontrará enlaces a sitios de `Internet` que le pueden ayudar.
+El objetivo de esta guia es mostrar cómo configurar un servidor `DNS Bind9` que resuelva direcciones IP en nombres de dominio dentro de una red privada. En este proceso de configuración se requieren conocimientos mínimos de `REDES` y `DNS`. En las [referencias](#referencias), encontrará enlaces a sitios de `Internet` que pueden ayudar.
 
 ## Escenario
 
 Es común encontrarnos entornos de red, donde se necesite que un mismo servidor de nombres `DNS` devuelva registros tanto de tipo canónico como direcciones `IP`, dependiendo de la red desde donde se originen las consultas. Por ejemplo:
 
-Existencia de un servidor `DNS` dentro del direccionamiento `TCP/IP` de la subred de servicios, o cómo se le conoce comúnmente red `DMZ`, que da servicio a redes públicas (`Internet`, la red externa del provedor `ISP` o la `VPN` externa de una organización) y redes privadas (`Intranet` o red `LAN`, una `DMZ`, una `VPN` interna, o a todas ellas). Si se realiza la consulta desde el exterior, deben devolverse los registros públicos; sin embargo, si se hace la misma consulta desde cualquiera de las subredes internas, la resolución deberá ser a un registro privado. Esto es posible lograrlo, gracias a la funcionalidad de vistas (`views`) en `Bind9`.
+Existencia de un servidor `DNS` dentro del direccionamiento `TCP/IP` de la subred de servicios, o cómo se le conoce comúnmente red `DMZ`, que da servicio a redes públicas (`Internet`, la red externa del provedor `ISP` o la `VPN` externa de una organización) y redes privadas (`Intranet` o red `LAN`, una `DMZ`, una `VPN` interna, o a todas ellas). Si se realiza la consulta desde el exterior, deben devolverse los registros públicos; sin embargo, si se hace la misma consulta desde cualquiera de las subredes internas, la resolución deberá ser a un registro privado. Esto es posible lograrlo, gracias a `Bind9`.
 
 ## Administración del servidor
 
 El servidor `DNS` de ejemplo utilizá los siguientes parámetros de configuración de red:
 
-* Dirección `IP` del servidor: `192.168.0.1`
-* Dominio `DNS`: `example.tld`
-* `FQDN` del servidor: `ns.example.tld`
-* Subred interna de la zona de servicios: `192.168.0.0/24`
-* Subred externa para registros públicos: `172.16.0.0/29`
+* Dirección `IP` del servidor: `192.168.1.76`
+* Dominio `DNS`: `clockwork.local`
+* `FQDN` del servidor: `ns.clockwork.local`
+* Subred interna de la zona de servicios: `192.168.1.0/24`
+* Subred externa para registros públicos: `192.168.210.142/24`
 
 ### Ajustes de los parámetros de red
 
 ```bash
 nano /etc/network/interfaces
 
+# The loopback network interface
 auto lo
 iface lo inet loopback
 
-auto eth0
-iface eth0 inet static
-    address 192.168.0.1/24
-    gateway 192.168.0.254
-    dns-nameservers 127.0.0.1
+#Primer adaptador ens160 DHCP
+auto ens160
+iface ens160 inet dhcp
+
+#Segundo adaptador ens256 Interna
+auto ens256
+iface ens256 inet static
+address 192.168.1.76
+netmask 255.255.255.0
+network 192.168.1.0
+broadcast 192.168.1.255
 ```
 
 ```bash
 nano /etc/resolv.conf
 
-domain example.tld
-nameserver 127.0.0.1
+nameserver 192.168.1.76
+options ens256 trust-ad
+search clockwork.local
 ```
 
 ```bash
 nano /etc/hosts
 
-127.0.0.1     localhost.localdomain   localhost
-192.168.0.1   ns.example.tld          ns
+127.0.0.1     clockwork.local   localhost
+192.168.1.76   servidor.clockwork.local          ns
 ```
 
 ### Instalación
 
 ```bash
-apt install bind9 dnsutils
+apt install bind9 bind9-dnsutils
 ```
 
 Para disponer de la documentación `off-line`, instalar además `bind9-doc`.
@@ -70,17 +78,29 @@ En las distribuciones `Debian GNU/Linux`, los ficheros de configuración del paq
 1. Editar fichero de configuración principal.
 
 ```bash
-cp /etc/bind/named.conf{,.org}
+cp /etc/bind/named.conf{,.bak}
 nano /etc/bind/named.conf
 ```
 ```bash
 include "/etc/bind/named.conf.options";
 include "/etc/bind/named.conf.local";
-include "/etc/bind/named.conf.log";
-include "/etc/bind/rndc.key";
+include "/etc/bind/named.conf.default-zones";
 ```
 
-2. Editar parámetros para la operación del servicio.
+2. Permitir solo direcciones IPv4
+
+```bash
+nano /etc/default/named
+```
+```bash
+# run resolvconf?
+RESOLVCONF=no
+
+# startup options for the server
+OPTIONS="-u bind -4"
+```
+
+3. Editar parámetros para la operación del servicio.
 
 ```bash
 cp /etc/bind/named.conf.options{,.org}
@@ -88,41 +108,37 @@ nano /etc/bind/named.conf.options
 ```
 ```bash
 options {
-	version none;
-	directory "/var/cache/bind";
-	dnssec-validation auto;
-	auth-nxdomain no;
-	interface-interval 0;
-	listen-on { 127.0.0.1; 192.168.0.1; };
-	listen-on-v6 { none; };
-	allow-query { any; };
-	empty-zones-enable no;
-	forwarders { 8.8.8.8; 8.8.4.4; };
-	forward first;
-	recursion no;
-	prefetch 0;
-	pid-file "/var/run/named/named.pid";
-	session-keyfile "/var/run/named/session.key";
-	minimal-responses yes;
-	max-cache-size 128m;
-    	rate-limit {
-        	responses-per-second 15;
-        	log-only no;
-    	};
-	max-cache-ttl 60;
-	max-ncache-ttl 60;
-	flush-zones-on-shutdown yes;
-};
-controls {
-	inet 127.0.0.1 port 953
-	   allow { localhost; 192.168.0.1; } keys { rndc-key; };
+        directory "/var/cache/bind";
+
+        // If there is a firewall between you and nameservers you want
+        // to talk to, you may need to fix the firewall to allow multiple
+        // ports to talk.  See http://www.kb.cert.org/vuls/id/800113
+
+        // If your ISP provided one or more IP addresses for stable
+        // nameservers, you probably want to use them as forwarders.
+        // Uncomment the following block, and insert the addresses replacing
+        // the all-0's placeholder.
+
+        listen-on { any; };
+        allow-query { localhost; 192.168.1.0/24; };
+        forwarders {
+                8.8.8.8;
+        };
+
+        //========================================================================
+        // If BIND logs error messages about the root key being expired,
+        // you will need to update your keys.  See https://www.isc.org/bind-keys
+        //========================================================================
+        dnssec-validation no;
+
+        #listen-on-v6 { any; };
 };
 ```
 
-3. Definir opciones de configuración y declaraciones de zonas del servidor `DNS`.
+4. Definir opciones de configuración y declaraciones de zonas del servidor `DNS`.
 
 ```bash
-cp /etc/bind/named.conf.local{,.org}
+cp /etc/bind/named.conf.local{,.bak}
 nano /etc/bind/named.conf.local
 ```
 ```bash
