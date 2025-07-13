@@ -6,9 +6,9 @@
 // organization
 //include "/etc/bind/zones.rfc1918";
 
-zone "clockwork.local" IN {
+zone "thequbit.local" IN {
         type master;
-        file "etc/bind/zones/db.clockwork.local";
+        file "etc/bind/zones/db.thequbit.local";
 };
 
 zone "1.168.192.in-addr.arpa" {
