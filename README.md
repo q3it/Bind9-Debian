@@ -19,8 +19,8 @@ Existencia de un servidor `DNS` dentro del direccionamiento `TCP/IP` de la subre
 El servidor `DNS` de ejemplo utilizá los siguientes parámetros de configuración de red:
 
 * Dirección `IP` del servidor: `192.168.1.76`
-* Dominio `DNS`: `clockwork.local`
-* `FQDN` del servidor: `ns.servidor.clockwork.local`
+* Dominio `DNS`: `thequbit.local`
+* `FQDN` del servidor: `ns.servidor.thequbit.local`
 * Red interna de la zona de servicios: `192.168.1.0/24`
 * Red externa para registros públicos: `192.168.210.142/24`
 
@@ -51,14 +51,14 @@ nano /etc/resolv.conf
 
 nameserver 192.168.1.76
 options ens256 trust-ad
-search clockwork.local
+search thequbit.local
 ```
 
 ```bash
 nano /etc/hosts
 
-127.0.0.1     clockwork.local   localhost
-192.168.1.76   servidor.clockwork.local          ns
+127.0.0.1     thequbit.local   localhost
+192.168.1.76   servidor.thequbit.local          ns
 ```
 
 ### Instalación
@@ -150,9 +150,9 @@ nano /etc/bind/named.conf.local
 // organization
 //include "/etc/bind/zones.rfc1918";
 
-zone "clockwork.local" IN {
+zone "thequbit.local" IN {
         type master;
-        file "etc/bind/zones/db.clockwork.local";
+        file "etc/bind/zones/db.thequbit.local";
 };
 
 zone "1.168.192.in-addr.arpa" {
@@ -174,26 +174,26 @@ mkdir /etc/bind/zonas
 - Copiamos el directorio de Zona Directa.
    
 ```bash
-cp /etc/bind/db.local /etc/bind/zonas/db.clockwork.local
+cp /etc/bind/db.local /etc/bind/zonas/db.thequbit.local
 ```
 - Configuramos.
 
 ```bash
-nano /etc/bind/db.clockwork.local
+nano /etc/bind/db.thequbit.local
 ```
 ```bash
 ;
 ; BIND data file for local loopback interface
 ;
 $TTL    604800
-@       IN      SOA     servidor.clockwork.local. root.clockwork.local. (
+@       IN      SOA     servidor.thequbit.local. root.thequbit.local. (
                               2         ; Serial
                          604800         ; Refresh
                           86400         ; Retry
                         2419200         ; Expire
                          604800 )       ; Negative Cache TTL
 ;
-                IN      NS      servidor.clockwork.local.
+                IN      NS      servidor.thequbit.local.
 servidor        IN      A       192.168.1.76
 equipo01        IN      A       192.168.1.54
 server          IN      CNAME   servidor
@@ -202,7 +202,7 @@ server          IN      CNAME   servidor
 - Copiamos el directorio de Zona Inversa.
    
 ```bash
-cp /etc/bind/zonas/db.clockwork.local /etc/bind/zonas/db.1.168.192
+cp /etc/bind/zonas/db.thequbit.local /etc/bind/zonas/db.1.168.192
 ```
 
 - Configuramos.
@@ -215,22 +215,22 @@ nano /etc/bind/db.1.168.192
 ; BIND data file for local loopback interface
 ;
 $TTL    604800
-@       IN      SOA     servidor.clockwork.local. root.clockwork.local. (
+@       IN      SOA     servidor.thequbit.local. root.thequbit.local. (
                               2         ; Serial
                          604800         ; Refresh
                           86400         ; Retry
                         2419200         ; Expire
                          604800 )       ; Negative Cache TTL
 ;
-                IN      NS      servidor.clockwork.local.
-76              IN      PTR     servidor.clockwork.local.
+                IN      NS      servidor.thequbit.local.
+76              IN      PTR     servidor.thequbit.local.
 ```
 
 6. Comprobar la existencia de errores tanto en la configuración como en los ficheros de zonas.
 
 ```bash
 named-checkconf /etc/bind/named.conf.local
-named-checkzone clockwork.local /etc/bind/zonas/db.clockwork.local
+named-checkzone thequbit.local /etc/bind/zonas/db.thequbit.local
 named-checkzone 1.168.192.in-addr.arpa /etc/bind/zonas/db.1.168.192
 ```
 
@@ -249,9 +249,9 @@ systemctl status bind9
 - Conexión desde máquina cliente 
 
 ```bash
-ping servidor.clockwork.local
+ping servidor.thequbit.local
 ping equipo01
-nslookup clockwork.local
+nslookup thequbit.local
 host servidor
 ```
 
